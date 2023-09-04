@@ -1,5 +1,8 @@
 /// <reference types ="Cypress" />
 
+chai.use(require("chai-sorted"))
+
+
 class swagLab_PageElements {
 
   //Login Page Elements
@@ -10,8 +13,8 @@ class swagLab_PageElements {
   loginPageLogo = 'div.login_logo';
   loginUserNameSection = '[id="login_credentials"]'
   loginPWSection = 'div[class*="login_password"]'
-  loginError='h3[data-test="error"]'
-  
+  loginError = 'h3[data-test="error"]'
+
 
   hamBurgerBTN = 'div[class="bm-burger-button"]'
   productsPageLogo = 'div.app_logo'
@@ -38,14 +41,24 @@ class swagLab_PageElements {
   productDetailDescription = 'div[class="inventory_details_desc"]'
   productDetailsPageBackBTN = 'button[class="inventory_details_back_button"]'
   productDetailsPageRemoveBTN = 'button[class*="btn_secondary btn_inventory"]'
-  productDetailsPageADDCartBTN='button[class="btn_primary btn_inventory"]'
+  productDetailsPageADDCartBTN = 'button[class="btn_primary btn_inventory"]'
+
+
+  //Cart Page Elements
+
+  productCartBTN='div[id="shopping_cart_container"] a[class*="shopping_cart_link"]'
+  cartPageProdDesc='div[class="inventory_item_desc"]'
+  cartPageContinueBTN='div[class="cart_footer"] a.btn_secondary'
+  cartPageCheckoutBTN='div[class="cart_footer"] a.checkout_button'
+  cartPageQTY='div[class="cart_quantity"]'
+  cartPageRemoveBTN='button[class="btn_secondary cart_button"]'
 
 
 
 
 
 
-  
+
   checkLoginPageContentsLoaded() {
 
     cy.get(this.loginPageLogo).should('be.visible');
@@ -59,13 +72,13 @@ class swagLab_PageElements {
   }
 
 
-  
-  loginValidation(credentails){
 
-    if(credentails=="Invalid"){
+  loginValidation(credentails) {
+
+    if (credentails == "Invalid") {
       cy.get(this.loginError).contains('Username and password do not match any user in this service').should('be.visible')
     }
-    else if(credentails=="Locked-User"){
+    else if (credentails == "Locked-User") {
       cy.get(this.loginError).contains("Sorry, this user has been locked out.").should('be.visible');
 
     }
@@ -73,7 +86,7 @@ class swagLab_PageElements {
   }
 
 
-  performRefresh(){
+  performRefresh() {
 
     cy.reload()
 
@@ -162,7 +175,7 @@ class swagLab_PageElements {
   }
 
 
-  verifySelectedProductDetails(prodName,prodPrice){
+  verifySelectedProductDetails(prodName, prodPrice) {
 
     cy.get(this.productDescriptionSection).should('exist')
     cy.get(this.productDetailName).contains(prodName).should('be.visible')
@@ -174,9 +187,29 @@ class swagLab_PageElements {
   }
 
 
-  Navigate_BacktoProductsPage(){
-    
+  Navigate_BacktoProductsPage() {
+
     cy.get(this.productDetailsPageBackBTN).contains('<- Back').should('be.visible').click()
+
+  }
+
+  
+  navigateProductCartPage(){
+
+    cy.get(this.productCartBTN).should('be.visible').click()
+
+  }
+
+
+  verifyCartProductDetails(prodName, prodPrice,prodQTY) {
+
+    cy.get(this.cartPageProdDesc).should('be.visible')
+    cy.get(this.productName).contains(prodName).should('be.visible')
+    cy.get(this.productPrice).contains(prodPrice).should('be.visible')
+    cy.get(this.cartPageQTY).contains(prodQTY).should('be.visible')
+    cy.get(this.cartPageContinueBTN).contains('Continue Shopping').should('be.visible')
+    cy.get(this.cartPageCheckoutBTN).contains('CHECKOUT').should('be.visible')  
+    cy.get(this.cartPageRemoveBTN).contains("REMOVE").should('be.visible')
 
   }
 
@@ -184,11 +217,58 @@ class swagLab_PageElements {
 
 
 
+  selectSortDropdown(dropdownOption) {
+
+    cy.get(this.selectContainer).select(dropdownOption)
+
+  }
+
+
+  checkProductSortStatus(sortOption) {
+
+    cy.log("After Clicking Sort")
+    cy.get(this.productName).then($prodNameText => {
+      var prodNames = Cypress._.map($prodNameText, $c => $c.innerText)
+      cy.log(prodNames)
+      console.log(prodNames)
+      if (sortOption == "Name (A to Z)") {
+        expect(prodNames).to.be.sorted({ ascending: true })
+      }
+      else {
+        expect(prodNames).to.be.sorted({ descending: true })
+      }
+
+    })
+
+  }
+
+
+  sortProductbyPrice(sortOption) {
+
+    cy.get(this.productPrice).then($prodpriceText => {
+      var prodPrices = Cypress._.map($prodpriceText, $c => $c.innerText)
+      cy.log(prodPrices)
+      console.log(prodPrices)
+
+      const specialCharRemove = str => str.replace(/[^0-9.]/g, "")
+      const prodPricesNumber = prodPrices.map(specialCharRemove)
+      console.log(prodPricesNumber);
+
+      const finalProdPrices = prodPricesNumber.map(parseFloat)
+      console.log(finalProdPrices);
+      
+      if (sortOption == "Price (low to high)") {
+        expect(finalProdPrices).to.be.sorted({ ascending: true })
+      }
+      else {
+        expect(finalProdPrices).to.be.sorted({ descending: true })
+      }
+
+    })
 
 
 
-
-
+  }
 
 
 

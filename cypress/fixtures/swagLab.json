@@ -1,9 +1,12 @@
 {
   "userName": "standard_user",
   "passWord": "secret_sauce",
-  "prodNames":["Sauce Labs Bike Light","Sauce Labs Backpack","Sauce Labs Bolt T-Shirt"],
-  "prodPrices":["9.99","29.99","15.99"],
+  "prodNames":["Sauce Labs Bike Light","Sauce Labs Backpack","Sauce Labs Bolt T-Shirt","Sauce Labs Fleece Jacket","Sauce Labs Onesie"],
+  "prodPrices":["9.99","29.99","15.99","49.99","7.99"],
+  "prodQTY":[1,2,3],
   "otherUserName":["locked_out_user","invalidUser"],
-  "otherPassword":["secret_sauce","invalidPw"]
+  "otherPassword":["secret_sauce","invalidPw"],
+  "sortOptions":["Name (A to Z)","Name (Z to A)","Price (low to high)","Price (high to low)"]
 
+  
 }
